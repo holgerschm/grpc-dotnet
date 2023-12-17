@@ -215,18 +215,18 @@ public class DeadlineTests : FunctionalTestBase
 
             protected override async Task<Stream> CreateContentReadStreamAsync()
             {
-                var stream = await _inner.ReadAsStreamAsync().ConfigureAwait(false);
+                var stream = await _inner.ReadAsStreamAsync();
 
                 return new PauseStream(stream);
             }
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
             {
-                _innerStream = await _inner.ReadAsStreamAsync().ConfigureAwait(false);
+                _innerStream = await _inner.ReadAsStreamAsync();
 
                 _innerStream = new PauseStream(_innerStream);
 
-                await _innerStream.CopyToAsync(stream).ConfigureAwait(false);
+                await _innerStream.CopyToAsync(stream);
             }
 
             protected override bool TryComputeLength(out long length)

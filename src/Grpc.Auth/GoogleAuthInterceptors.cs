@@ -46,7 +46,7 @@ public static class GoogleAuthInterceptors
 
         return new AsyncAuthInterceptor(async (context, metadata) =>
         {
-            var accessToken = await credential.GetAccessTokenForRequestAsync(context.ServiceUrl, CancellationToken.None).ConfigureAwait(false);
+            var accessToken = await credential.GetAccessTokenForRequestAsync(context.ServiceUrl, CancellationToken.None);
             metadata.Add(CreateBearerTokenHeader(accessToken));
         });
     }
@@ -61,7 +61,7 @@ public static class GoogleAuthInterceptors
     {
         return new AsyncAuthInterceptor(async (context, metadata) => 
         {
-            AccessTokenWithHeaders tokenAndHeaders = await credential.GetAccessTokenWithHeadersForRequestAsync(context.ServiceUrl, CancellationToken.None).ConfigureAwait(false);
+            AccessTokenWithHeaders tokenAndHeaders = await credential.GetAccessTokenWithHeadersForRequestAsync(context.ServiceUrl, CancellationToken.None);
             metadata.Add(CreateBearerTokenHeader(tokenAndHeaders.AccessToken));
             foreach (var header in tokenAndHeaders.Headers)
             {

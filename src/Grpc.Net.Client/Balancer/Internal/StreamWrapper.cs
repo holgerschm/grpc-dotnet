@@ -93,7 +93,7 @@ internal sealed class StreamWrapper : Stream
             }
         }
 
-        return await _inner.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        return await _inner.ReadAsync(buffer, cancellationToken);
     }
 
     public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) =>
@@ -101,13 +101,13 @@ internal sealed class StreamWrapper : Stream
 
     public override async ValueTask DisposeAsync()
     {
-        await base.DisposeAsync().ConfigureAwait(false);
+        await base.DisposeAsync();
 
         // Avoid invoking dispose callback multiple times.
         if (_disposed)
         {
             _onDispose(this);
-            await _inner.DisposeAsync().ConfigureAwait(false);
+            await _inner.DisposeAsync();
             _disposed = true;
         }
     }

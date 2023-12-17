@@ -49,7 +49,7 @@ internal class Base64ResponseStream : Stream
         // Handle zero byte reads.
         if (data.Length == 0)
         {
-            var read = await StreamHelpers.ReadAsync(_inner, data, cancellationToken).ConfigureAwait(false);
+            var read = await StreamHelpers.ReadAsync(_inner, data, cancellationToken);
             Debug.Assert(read == 0);
             return 0;
         }
@@ -85,7 +85,7 @@ internal class Base64ResponseStream : Stream
         // Minimum valid base64 length is 4. Read until we have at least that much content
         do
         {
-            var read = await StreamHelpers.ReadAsync(_inner, availableReadData, cancellationToken).ConfigureAwait(false);
+            var read = await StreamHelpers.ReadAsync(_inner, availableReadData, cancellationToken);
             if (read == 0)
             {
                 if (_remainder > 0)

@@ -97,7 +97,7 @@ internal class Base64RequestStream : Stream
                 );
 
             var base64Remainder = _buffer.Length - localBuffer.Length;
-            await StreamHelpers.WriteAsync(_inner, _buffer, 0, bytesWritten + base64Remainder, cancellationToken).ConfigureAwait(false);
+            await StreamHelpers.WriteAsync(_inner, _buffer, 0, bytesWritten + base64Remainder, cancellationToken);
 
             data = data.Slice(bytesConsumed);
             localBuffer = _buffer;
@@ -107,7 +107,7 @@ internal class Base64RequestStream : Stream
         // If there was not enough data to write along with remainder then write it here
         if (localBuffer.Length < _buffer.Length)
         {
-            await StreamHelpers.WriteAsync(_inner, _buffer, 0, 4, cancellationToken).ConfigureAwait(false);
+            await StreamHelpers.WriteAsync(_inner, _buffer, 0, 4, cancellationToken);
         }
 
         if (data.Length > 0)
@@ -129,8 +129,8 @@ internal class Base64RequestStream : Stream
 
     public override async Task FlushAsync(CancellationToken cancellationToken)
     {
-        await WriteRemainderAsync(cancellationToken).ConfigureAwait(false);
-        await _inner.FlushAsync(cancellationToken).ConfigureAwait(false);
+        await WriteRemainderAsync(cancellationToken);
+        await _inner.FlushAsync(cancellationToken);
     }
 
     internal async Task WriteRemainderAsync(CancellationToken cancellationToken)
@@ -139,7 +139,7 @@ internal class Base64RequestStream : Stream
         {
             EnsureSuccess(Base64.EncodeToUtf8InPlace(_buffer, _remainder, out var bytesWritten));
 
-            await StreamHelpers.WriteAsync(_inner, _buffer!, 0, bytesWritten, cancellationToken).ConfigureAwait(false);
+            await StreamHelpers.WriteAsync(_inner, _buffer!, 0, bytesWritten, cancellationToken);
             _remainder = 0;
         }
     }

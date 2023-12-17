@@ -313,7 +313,7 @@ public sealed class Subchannel : IDisposable
                     }
                 }
 
-                switch (await _transport.TryConnectAsync(connectContext).ConfigureAwait(false))
+                switch (await _transport.TryConnectAsync(connectContext))
                 {
                     case ConnectResult.Success:
                         return;
@@ -339,7 +339,7 @@ public sealed class Subchannel : IDisposable
                 
                 var backkoff = TimeSpan.FromTicks(backoffTicks);
                 SubchannelLog.StartingConnectBackoff(_logger, Id, backkoff);
-                var completedTask = await Task.WhenAny(Task.Delay(backkoff, delayCts.Token), _delayInterruptTcs.Task).ConfigureAwait(false);
+                var completedTask = await Task.WhenAny(Task.Delay(backkoff, delayCts.Token), _delayInterruptTcs.Task);
 
                 if (completedTask != _delayInterruptTcs.Task)
                 {

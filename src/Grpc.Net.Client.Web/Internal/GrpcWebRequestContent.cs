@@ -47,12 +47,12 @@ internal class GrpcWebRequestContent : HttpContent
     private async Task SerializeTextToStreamAsync(Stream stream)
     {
         using var base64RequestStream = new Base64RequestStream(stream);
-        await _inner.CopyToAsync(base64RequestStream).ConfigureAwait(false);
+        await _inner.CopyToAsync(base64RequestStream);
 
         // Any remaining content needs to be written when SerializeToStreamAsync finishes.
         // We want to avoid unnecessary flush calls so a custom method is used to write
         // ramining content rather than calling FlushAsync.
-        await base64RequestStream.WriteRemainderAsync(CancellationToken.None).ConfigureAwait(false);
+        await base64RequestStream.WriteRemainderAsync(CancellationToken.None);
     }
 
     protected override bool TryComputeLength(out long length)

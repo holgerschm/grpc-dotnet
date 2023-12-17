@@ -40,7 +40,7 @@ public static class GoogleGrpcCredentials
     /// <returns>The <c>ChannelCredentials</c> instance.</returns>
     public static async Task<ChannelCredentials> GetApplicationDefaultAsync()
     {
-        var googleCredential = await GoogleCredential.GetApplicationDefaultAsync().ConfigureAwait(false);
+        var googleCredential = await GoogleCredential.GetApplicationDefaultAsync();
         return googleCredential.ToChannelCredentials();
     }
 

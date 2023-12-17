@@ -190,15 +190,15 @@ public class HealthServiceImpl : Grpc.Health.V1.Health.HealthBase
 
         // Send current status immediately
         HealthCheckResponse response = GetHealthCheckResponse(service, throwOnNotFound: false);
-        await responseStream.WriteAsync(response).ConfigureAwait(false);
+        await responseStream.WriteAsync(response);
 
         // Read messages. WaitToReadAsync will wait until new messages are available.
         // Loop will exit when the call is canceled and the writer is marked as complete.
-        while (await channel.Reader.WaitToReadAsync().ConfigureAwait(false))
+        while (await channel.Reader.WaitToReadAsync())
         {
             if (channel.Reader.TryRead(out HealthCheckResponse item))
             {
-                await responseStream.WriteAsync(item).ConfigureAwait(false);
+                await responseStream.WriteAsync(item);
             }
         }
     }

@@ -297,7 +297,7 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
     {
         try
         {
-            var httpResponse = await HttpResponseTask.ConfigureAwait(false);
+            var httpResponse = await HttpResponseTask;
 
             // Check if the headers have a status. If they do then wait for the overall call task
             // to complete before returning headers. This means that if the call failed with a
@@ -305,7 +305,7 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
             var grpcStatus = GrpcProtocolHelpers.GetHeaderValue(httpResponse.Headers, GrpcProtocolConstants.StatusTrailer);
             if (grpcStatus != null)
             {
-                await CallTask.ConfigureAwait(false);
+                await CallTask;
             }
 
             var metadata = GrpcProtocolHelpers.BuildMetadata(httpResponse.Headers);
@@ -474,7 +474,7 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
                 // inside try/catch to handle errors.
                 if (Options.Credentials != null || Channel.CallCredentials?.Count > 0)
                 {
-                    await ReadCredentials(request).ConfigureAwait(false);
+                    await ReadCredentials(request);
                 }
 
                 // Fail early if deadline has already been exceeded
@@ -488,7 +488,7 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
                         ? httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, _callCts.Token)
                         : Channel.HttpInvoker.SendAsync(request, _callCts.Token);
 
-                    HttpResponse = await httpResponseTask.ConfigureAwait(false);
+                    HttpResponse = await httpResponseTask;
                     _httpResponseTcs.TrySetResult(HttpResponse);
                 }
                 catch (Exception ex)
@@ -555,12 +555,12 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
                     {
                         // Read entire response body immediately and read status from trailers
                         // Trailers are only available once the response body had been read
-                        var responseStream = await HttpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                        var responseStream = await HttpResponse.Content.ReadAsStreamAsync();
                         var message = await ReadMessageAsync(
                             responseStream,
                             GrpcProtocolHelpers.GetGrpcEncoding(HttpResponse),
                             singleMessage: true,
-                            _callCts.Token).ConfigureAwait(false);
+                            _callCts.Token);
                         status = GrpcProtocolHelpers.GetResponseStatus(HttpResponse, Channel.OperatingSystem.IsBrowser, Channel.HttpHandlerType == HttpHandlerType.WinHttpHandler);
 
                         if (message == null)
@@ -614,7 +614,7 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
 
                         // Wait until the response has been read and status read from trailers.
                         // TCS will also be set in Dispose.
-                        status = await CallTask.ConfigureAwait(false);
+                        status = await CallTask;
 
                         finished = FinishCall(request, diagnosticSourceEnabled, activity, status.Value);
                         Cleanup(status.Value);
@@ -923,13 +923,13 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
 
             if (Options.Credentials != null)
             {
-                await GrpcProtocolHelpers.ReadCredentialMetadata(configurator, Channel, request, Method, Options.Credentials, _callCts.Token).ConfigureAwait(false);
+                await GrpcProtocolHelpers.ReadCredentialMetadata(configurator, Channel, request, Method, Options.Credentials, _callCts.Token);
             }
             if (Channel.CallCredentials?.Count > 0)
             {
                 foreach (var credentials in Channel.CallCredentials)
                 {
-                    await GrpcProtocolHelpers.ReadCredentialMetadata(configurator, Channel, request, Method, credentials, _callCts.Token).ConfigureAwait(false);
+                    await GrpcProtocolHelpers.ReadCredentialMetadata(configurator, Channel, request, Method, credentials, _callCts.Token);
                 }
             }
         }
@@ -1131,7 +1131,7 @@ internal sealed partial class GrpcCall<TRequest, TResponse> : GrpcCall, IGrpcCal
             Method.ResponseMarshaller.ContextualDeserializer,
             grpcEncoding,
             singleMessage,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken);
         if (message == null)
         {
             return null;

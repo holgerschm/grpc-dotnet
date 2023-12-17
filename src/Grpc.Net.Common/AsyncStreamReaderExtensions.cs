@@ -44,7 +44,7 @@ public static class AsyncStreamReaderExtensions
 
     private static async IAsyncEnumerable<T> ReadAllAsyncCore<T>(IAsyncStreamReader<T> streamReader, [EnumeratorCancellation]CancellationToken cancellationToken)
     {
-        while (await streamReader.MoveNext(cancellationToken).ConfigureAwait(false))
+        while (await streamReader.MoveNext(cancellationToken))
         {
             yield return streamReader.Current;
         }

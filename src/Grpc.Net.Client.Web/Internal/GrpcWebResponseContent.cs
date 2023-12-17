@@ -48,7 +48,7 @@ internal class GrpcWebResponseContent : HttpContent
         // accessed via ReadAsBytesAsync. The gRPC client will always
         // call ReadAsStreamAsync, which will call CreateContentReadStreamAsync.
 
-        _innerStream = await _inner.ReadAsStreamAsync().ConfigureAwait(false);
+        _innerStream = await _inner.ReadAsStreamAsync();
 
         if (_mode == GrpcWebMode.GrpcWebText)
         {
@@ -57,12 +57,12 @@ internal class GrpcWebResponseContent : HttpContent
 
         _innerStream = new GrpcWebResponseStream(_innerStream, _responseTrailers);
 
-        await _innerStream.CopyToAsync(stream).ConfigureAwait(false);
+        await _innerStream.CopyToAsync(stream);
     }
 
     protected override async Task<Stream> CreateContentReadStreamAsync()
     {
-        var stream = await _inner.ReadAsStreamAsync().ConfigureAwait(false);
+        var stream = await _inner.ReadAsStreamAsync();
 
         if (_mode == GrpcWebMode.GrpcWebText)
         {

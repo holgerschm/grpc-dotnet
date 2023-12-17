@@ -295,7 +295,7 @@ internal static class GrpcProtocolHelpers
             configurator.CachedContext ??= CreateAuthInterceptorContext(channel.Address, method, cancellationToken);
 
             var metadata = new Metadata();
-            await configurator.Interceptor(configurator.CachedContext, metadata).ConfigureAwait(false);
+            await configurator.Interceptor(configurator.CachedContext, metadata);
 
             foreach (var entry in metadata)
             {
@@ -310,7 +310,7 @@ internal static class GrpcProtocolHelpers
             foreach (var callCredentials in compositeCredentials)
             {
                 configurator.ResetPerCallCredentialState();
-                await ReadCredentialMetadata(configurator, channel, message, method, callCredentials, cancellationToken).ConfigureAwait(false);
+                await ReadCredentialMetadata(configurator, channel, message, method, callCredentials, cancellationToken);
             }
         }
     }

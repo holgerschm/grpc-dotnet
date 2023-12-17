@@ -162,7 +162,7 @@ public abstract class PollingResolver : Resolver
             {
                 try
                 {
-                    await ResolveAsync(cancellationToken).ConfigureAwait(false);
+                    await ResolveAsync(cancellationToken);
 
                     // ResolveAsync may report a failure but not throw. Check to see whether an OK result
                     // has been reported. If not then start retry loop.
@@ -198,7 +198,7 @@ public abstract class PollingResolver : Resolver
 
                 var backkoff = TimeSpan.FromTicks(backoffTicks);
                 Log.StartingResolveBackoff(_logger, GetType(), backkoff);
-                await Task.Delay(backkoff, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(backkoff, cancellationToken);
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

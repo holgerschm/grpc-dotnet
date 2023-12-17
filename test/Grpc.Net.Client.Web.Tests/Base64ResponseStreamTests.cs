@@ -227,7 +227,7 @@ public class Base64ResponseStreamTests
             var received = 0;
             int read;
             messageData = new byte[length];
-            while ((read = await ReadAsync(responseStream, messageData.AsMemory(received, messageData.Length - received), cancellationToken).ConfigureAwait(false)) > 0)
+            while ((read = await ReadAsync(responseStream, messageData.AsMemory(received, messageData.Length - received), cancellationToken)) > 0)
             {
                 received += read;
 

@@ -41,8 +41,8 @@ internal class RetryCallBaseClientStreamReader<TRequest, TResponse> : IAsyncStre
 
     public async Task<bool> MoveNext(CancellationToken cancellationToken)
     {
-        var call = await _retryCallBase.CommitedCallTask.ConfigureAwait(false);
-        return await call.ClientStreamReader!.MoveNext(cancellationToken).ConfigureAwait(false);
+        var call = await _retryCallBase.CommitedCallTask;
+        return await call.ClientStreamReader!.MoveNext(cancellationToken);
     }
 
     private string DebuggerToString()

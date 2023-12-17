@@ -87,13 +87,13 @@ public sealed class LoopbackProxyServer : IDisposable
             {
                 while (true)
                 {
-                    Socket s = await _listener.AcceptAsync().ConfigureAwait(false);
+                    Socket s = await _listener.AcceptAsync();
 
                     var connectionTask = Task.Run(async () =>
                     {
                         try
                         {
-                            await ProcessConnection(s).ConfigureAwait(false);
+                            await ProcessConnection(s);
                         }
                         catch (Exception ex)
                         {
@@ -116,7 +116,7 @@ public sealed class LoopbackProxyServer : IDisposable
 
             try
             {
-                await Task.WhenAll(activeTasks.Keys).ConfigureAwait(false);
+                await Task.WhenAll(activeTasks.Keys);
             }
             catch (Exception ex)
             {
@@ -137,7 +137,7 @@ public sealed class LoopbackProxyServer : IDisposable
         {
             while (true)
             {
-                if (!await ProcessRequest(s, reader, writer).ConfigureAwait(false))
+                if (!await ProcessRequest(s, reader, writer))
                 {
                     break;
                 }
@@ -197,7 +197,7 @@ public sealed class LoopbackProxyServer : IDisposable
             int remotePort = int.Parse(tokens[1], CultureInfo.InvariantCulture);
 
             Send200Response(writer);
-            await ProcessConnectMethod(clientSocket, (NetworkStream)reader.BaseStream, remoteHost, remotePort).ConfigureAwait(false);
+            await ProcessConnectMethod(clientSocket, (NetworkStream)reader.BaseStream, remoteHost, remotePort);
 
             return false; // connection can't be used for any more requests
         }
@@ -220,7 +220,7 @@ public sealed class LoopbackProxyServer : IDisposable
 
         var handler = new HttpClientHandler() { UseProxy = false };
         using (HttpClient outboundClient = new HttpClient(handler))
-        using (HttpResponseMessage response = await outboundClient.SendAsync(requestMessage).ConfigureAwait(false))
+        using (HttpResponseMessage response = await outboundClient.SendAsync(requestMessage))
         {
             // Transfer the response headers from the server to the client.
             var sb = new StringBuilder($"HTTP/{response.Version.ToString(2)} {(int)response.StatusCode} {response.ReasonPhrase}\r\n");
@@ -238,7 +238,7 @@ public sealed class LoopbackProxyServer : IDisposable
             writer.Write(sb.ToString());
 
             // Forward the response body from the server to the client.
-            string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string responseBody = await response.Content.ReadAsStringAsync();
             writer.Write(responseBody);
 
             return true;
@@ -249,7 +249,7 @@ public sealed class LoopbackProxyServer : IDisposable
     {
         // Open connection to destination server.
         using Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        await serverSocket.ConnectAsync(remoteHost, remotePort).ConfigureAwait(false);
+        await serverSocket.ConnectAsync(remoteHost, remotePort);
         NetworkStream serverStream = new NetworkStream(serverSocket);
 
         // Relay traffic to/from client and destination server.
@@ -257,7 +257,7 @@ public sealed class LoopbackProxyServer : IDisposable
         {
             try
             {
-                await clientStream.CopyToAsync(serverStream).ConfigureAwait(false);
+                await clientStream.CopyToAsync(serverStream);
                 serverSocket.Shutdown(SocketShutdown.Send);
             }
             catch (Exception ex)
@@ -270,7 +270,7 @@ public sealed class LoopbackProxyServer : IDisposable
         {
             try
             {
-                await serverStream.CopyToAsync(clientStream).ConfigureAwait(false);
+                await serverStream.CopyToAsync(clientStream);
                 clientSocket.Shutdown(SocketShutdown.Send);
             }
             catch (Exception ex)
@@ -279,7 +279,7 @@ public sealed class LoopbackProxyServer : IDisposable
             }
         });
 
-        await Task.WhenAll(new[] { clientCopyTask, serverCopyTask }).ConfigureAwait(false);
+        await Task.WhenAll(new[] { clientCopyTask, serverCopyTask });
 
         /// <summary>Closes sockets to cause both tasks to end, and eats connection reset/aborted errors.</summary>
         void HandleExceptions(Exception ex)

@@ -61,7 +61,7 @@ internal class GrpcWebResponseStream : Stream
         if (data.Length == 0)
         {
             // Handle zero byte reads.
-            var read = await StreamHelpers.ReadAsync(_inner, data, cancellationToken).ConfigureAwait(false);
+            var read = await StreamHelpers.ReadAsync(_inner, data, cancellationToken);
             Debug.Assert(read == 0);
             return 0;
         }
@@ -82,7 +82,7 @@ internal class GrpcWebResponseStream : Stream
                     Debug.Assert(_contentRemaining > 0);
 
                     headerBuffer = data.Length >= _contentRemaining ? data.Slice(0, _contentRemaining) : data;
-                    var success = await TryReadDataAsync(_inner, headerBuffer, cancellationToken).ConfigureAwait(false);
+                    var success = await TryReadDataAsync(_inner, headerBuffer, cancellationToken);
                     if (!success)
                     {
                         return 0;
@@ -132,7 +132,7 @@ internal class GrpcWebResponseStream : Stream
                         data = data.Slice(0, _contentRemaining);
                     }
 
-                    var read = await StreamHelpers.ReadAsync(_inner, data, cancellationToken).ConfigureAwait(false);
+                    var read = await StreamHelpers.ReadAsync(_inner, data, cancellationToken);
                     _contentRemaining -= read;
                     if (_contentRemaining == 0)
                     {
@@ -151,7 +151,7 @@ internal class GrpcWebResponseStream : Stream
                     {
                         var newBuffer = new byte[HeaderLength];
                         headerBuffer.CopyTo(newBuffer);
-                        var success = await TryReadDataAsync(_inner, newBuffer.AsMemory(headerBuffer.Length), cancellationToken).ConfigureAwait(false);
+                        var success = await TryReadDataAsync(_inner, newBuffer.AsMemory(headerBuffer.Length), cancellationToken);
                         if (!success)
                         {
                             return 0;
@@ -160,7 +160,7 @@ internal class GrpcWebResponseStream : Stream
                     }
                     var length = (int)BinaryPrimitives.ReadUInt32BigEndian(headerBuffer.Span.Slice(1));
 
-                    await ReadTrailersAsync(length, data, cancellationToken).ConfigureAwait(false);
+                    await ReadTrailersAsync(length, data, cancellationToken);
                     return 0;
                 }
             default:
@@ -183,7 +183,7 @@ internal class GrpcWebResponseStream : Stream
                 data = data.Slice(0, trailerLength);
             }
 
-            var success = await TryReadDataAsync(_inner, data, cancellationToken).ConfigureAwait(false);
+            var success = await TryReadDataAsync(_inner, data, cancellationToken);
             if (!success)
             {
                 throw new InvalidOperationException("Could not read trailing headers.");
@@ -197,7 +197,7 @@ internal class GrpcWebResponseStream : Stream
         // 2. The response stream is read to completion. HttpClient may not recognize the
         //    request as completing successfully if the request and response aren't completely
         //    consumed.
-        var count = await StreamHelpers.ReadAsync(_inner, data, cancellationToken).ConfigureAwait(false);
+        var count = await StreamHelpers.ReadAsync(_inner, data, cancellationToken);
         if (count > 0)
         {
             throw new InvalidOperationException("Unexpected data after trailers.");
@@ -297,7 +297,7 @@ internal class GrpcWebResponseStream : Stream
     {
         int read;
         var received = 0;
-        while ((read = await StreamHelpers.ReadAsync(responseStream, buffer.Slice(received, buffer.Length - received), cancellationToken).ConfigureAwait(false)) > 0)
+        while ((read = await StreamHelpers.ReadAsync(responseStream, buffer.Slice(received, buffer.Length - received), cancellationToken)) > 0)
         {
             received += read;
 

@@ -29,9 +29,9 @@ internal static class AsyncStreamExtensions
     public static async Task ForEachAsync<T>(this IAsyncStreamReader<T> streamReader, Func<T, Task> asyncAction)
         where T : class
     {
-        while (await streamReader.MoveNext().ConfigureAwait(false))
+        while (await streamReader.MoveNext())
         {
-            await asyncAction(streamReader.Current).ConfigureAwait(false);
+            await asyncAction(streamReader.Current);
         }
     }
 
@@ -42,7 +42,7 @@ internal static class AsyncStreamExtensions
         where T : class
     {
         var result = new List<T>();
-        while (await streamReader.MoveNext().ConfigureAwait(false))
+        while (await streamReader.MoveNext())
         {
             result.Add(streamReader.Current);
         }
@@ -58,11 +58,11 @@ internal static class AsyncStreamExtensions
     {
         foreach (var element in elements)
         {
-            await streamWriter.WriteAsync(element).ConfigureAwait(false);
+            await streamWriter.WriteAsync(element);
         }
         if (complete)
         {
-            await streamWriter.CompleteAsync().ConfigureAwait(false);
+            await streamWriter.CompleteAsync();
         }
     }
 
@@ -74,7 +74,7 @@ internal static class AsyncStreamExtensions
     {
         foreach (var element in elements)
         {
-            await streamWriter.WriteAsync(element).ConfigureAwait(false);
+            await streamWriter.WriteAsync(element);
         }
     }
 }

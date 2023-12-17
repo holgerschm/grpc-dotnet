@@ -38,7 +38,7 @@ public class UnixDomainSocketConnectionFactory
 
         try
         {
-            await socket.ConnectAsync(_endPoint, cancellationToken).ConfigureAwait(false);
+            await socket.ConnectAsync(_endPoint, cancellationToken);
             return new NetworkStream(socket, true);
         }
         catch

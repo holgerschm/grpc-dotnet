@@ -58,10 +58,10 @@ public class ReflectionServiceImpl : Grpc.Reflection.V1Alpha.ServerReflection.Se
     /// </summary>
     public override async Task ServerReflectionInfo(IAsyncStreamReader<ServerReflectionRequest> requestStream, IServerStreamWriter<ServerReflectionResponse> responseStream, ServerCallContext context)
     {
-        while (await requestStream.MoveNext().ConfigureAwait(false))
+        while (await requestStream.MoveNext())
         {
             var response = ProcessRequest(requestStream.Current);
-            await responseStream.WriteAsync(response).ConfigureAwait(false);
+            await responseStream.WriteAsync(response);
         }
     }
 

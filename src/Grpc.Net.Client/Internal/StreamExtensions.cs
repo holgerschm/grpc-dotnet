@@ -61,7 +61,7 @@ internal static partial class StreamExtensions
 #if NET6_0_OR_GREATER
             // Start with zero-byte read.
             // A zero-byte read avoids renting buffer until the response is ready. Especially useful for long running streaming calls.
-            var readCount = await responseStream.ReadAsync(Memory<byte>.Empty, cancellationToken).ConfigureAwait(false);
+            var readCount = await responseStream.ReadAsync(Memory<byte>.Empty, cancellationToken);
             Debug.Assert(readCount == 0);
 #endif
 
@@ -72,7 +72,7 @@ internal static partial class StreamExtensions
 
             int read;
             var received = 0;
-            while ((read = await responseStream.ReadAsync(buffer.AsMemory(received, GrpcProtocolConstants.HeaderSize - received), cancellationToken).ConfigureAwait(false)) > 0)
+            while ((read = await responseStream.ReadAsync(buffer.AsMemory(received, GrpcProtocolConstants.HeaderSize - received), cancellationToken)) > 0)
             {
                 received += read;
 
@@ -113,7 +113,7 @@ internal static partial class StreamExtensions
                     buffer = ArrayPool<byte>.Shared.Rent(length);
                 }
 
-                await ReadMessageContentAsync(responseStream, buffer, length, cancellationToken).ConfigureAwait(false);
+                await ReadMessageContentAsync(responseStream, buffer, length, cancellationToken);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -156,7 +156,7 @@ internal static partial class StreamExtensions
             {
                 // Check that there is no additional content in the stream for a single message
                 // There is no ReadByteAsync on stream. Reuse header array with ReadAsync, we don't need it anymore
-                if (await responseStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false) > 0)
+                if (await responseStream.ReadAsync(buffer, cancellationToken) > 0)
                 {
                     throw new InvalidDataException("Unexpected data after finished reading message.");
                 }
@@ -235,7 +235,7 @@ internal static partial class StreamExtensions
         // Read message content until content length is reached
         var received = 0;
         int read;
-        while ((read = await responseStream.ReadAsync(messageData.Slice(received, length - received), cancellationToken).ConfigureAwait(false)) > 0)
+        while ((read = await responseStream.ReadAsync(messageData.Slice(received, length - received), cancellationToken)) > 0)
         {
             received += read;
 
@@ -307,7 +307,7 @@ internal static partial class StreamExtensions
 
             // Sending the header+content in a single WriteAsync call has significant performance benefits
             // https://github.com/dotnet/runtime/issues/35184#issuecomment-626304981
-            await stream.WriteAsync(serializationContext.GetWrittenPayload(), call.CancellationToken).ConfigureAwait(false);
+            await stream.WriteAsync(serializationContext.GetWrittenPayload(), call.CancellationToken);
 
             GrpcCallLog.MessageSent(call.Logger);
         }
@@ -344,7 +344,7 @@ internal static partial class StreamExtensions
 
             // Sending the header+content in a single WriteAsync call has significant performance benefits
             // https://github.com/dotnet/runtime/issues/35184#issuecomment-626304981
-            await stream.WriteAsync(data, cancellationToken).ConfigureAwait(false);
+            await stream.WriteAsync(data, cancellationToken);
 
             GrpcCallLog.MessageSent(call.Logger);
         }

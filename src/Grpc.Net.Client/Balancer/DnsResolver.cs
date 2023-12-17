@@ -83,7 +83,7 @@ internal sealed class DnsResolver : PollingResolver
                 var delay = MinimumDnsResolutionRate - elapsedTimeSinceLastRefresh;
                 DnsResolverLog.StartingRateLimitDelay(_logger, delay, MinimumDnsResolutionRate);
 
-                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(delay, cancellationToken);
             }
 
             var lastResolveStart = SystemClock.UtcNow;
@@ -96,9 +96,9 @@ internal sealed class DnsResolver : PollingResolver
             DnsResolverLog.StartingDnsQuery(_logger, _dnsAddress);
             var addresses =
 #if NET6_0_OR_GREATER                    
-                await Dns.GetHostAddressesAsync(_dnsAddress, cancellationToken).ConfigureAwait(false);
+                await Dns.GetHostAddressesAsync(_dnsAddress, cancellationToken);
 #else
-                await Dns.GetHostAddressesAsync(_dnsAddress).ConfigureAwait(false);
+                await Dns.GetHostAddressesAsync(_dnsAddress);
 #endif
 
             DnsResolverLog.ReceivedDnsResults(_logger, addresses.Length, _dnsAddress, addresses);

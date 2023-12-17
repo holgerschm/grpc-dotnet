@@ -60,7 +60,7 @@ internal class WinHttpUnaryContent<TRequest, TResponse> : HttpContent
 
     private static async Task WriteMessageCore(Task writeMessageTask)
     {
-        await writeMessageTask.ConfigureAwait(false);
+        await writeMessageTask;
         if (GrpcEventSource.Log.IsEnabled())
         {
             GrpcEventSource.Log.MessageSent();

@@ -93,7 +93,7 @@ internal class HttpContentClientStreamWriter<TRequest, TResponse> : ClientStream
 
         try
         {
-            await WriteAsync(WriteMessageToStream, message, cancellationToken).ConfigureAwait(false);
+            await WriteAsync(WriteMessageToStream, message, cancellationToken);
         }
         finally
         {
@@ -156,7 +156,7 @@ internal class HttpContentClientStreamWriter<TRequest, TResponse> : ClientStream
         try
         {
             // Wait until the client stream has started
-            var writeStream = await WriteStreamTcs.Task.ConfigureAwait(false);
+            var writeStream = await WriteStreamTcs.Task;
 
             // WriteOptions set on the writer take precedence over the CallOptions.WriteOptions
             var callOptions = _call.Options;
@@ -166,10 +166,10 @@ internal class HttpContentClientStreamWriter<TRequest, TResponse> : ClientStream
                 callOptions = callOptions.WithWriteOptions(WriteOptions);
             }
 
-            await writeFunc(_call, writeStream, callOptions, state).ConfigureAwait(false);
+            await writeFunc(_call, writeStream, callOptions, state);
 
             // Flush stream to ensure messages are sent immediately.
-            await writeStream.FlushAsync(_call.CancellationToken).ConfigureAwait(false);
+            await writeStream.FlushAsync(_call.CancellationToken);
             if (GrpcEventSource.Log.IsEnabled())
             {
                 GrpcEventSource.Log.MessageSent();

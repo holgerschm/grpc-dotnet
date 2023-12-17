@@ -127,7 +127,7 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
                 HttpResponseMessage? httpResponse = null;
                 try
                 {
-                    httpResponse = await currentCall.HttpResponseTask.ConfigureAwait(false);
+                    httpResponse = await currentCall.HttpResponseTask;
                     responseStatus = GrpcCall.ValidateHeaders(httpResponse, out _);
                 }
                 catch (RpcException ex)
@@ -163,7 +163,7 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
                     CommitCall(currentCall, CommitReason.ResponseHeadersReceived);
 
                     // Force yield here to prevent continuation running with any locks.
-                    responseStatus = await CompatibilityHelpers.AwaitWithYieldAsync(currentCall.CallTask).ConfigureAwait(false);
+                    responseStatus = await CompatibilityHelpers.AwaitWithYieldAsync(currentCall.CallTask);
                     if (responseStatus.Value.StatusCode == StatusCode.OK)
                     {
                         RetryAttemptCallSuccess();
@@ -217,7 +217,7 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
                     }
 
                     Log.StartingRetryDelay(Logger, delayDuration);
-                    await Task.Delay(delayDuration, CancellationTokenSource.Token).ConfigureAwait(false);
+                    await Task.Delay(delayDuration, CancellationTokenSource.Token);
 
                     _nextRetryDelayMilliseconds = CalculateNextRetryDelay();
 
@@ -261,7 +261,7 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
 
                     // Wait until the commited call is finished and then clean up retry call.
                     // Force yield here to prevent continuation running with any locks.
-                    var status = await CompatibilityHelpers.AwaitWithYieldAsync(call.CallTask).ConfigureAwait(false);
+                    var status = await CompatibilityHelpers.AwaitWithYieldAsync(call.CallTask);
 
                     var observeExceptions = status.StatusCode is StatusCode.Cancelled or StatusCode.DeadlineExceeded;
                     Cleanup(observeExceptions);
@@ -314,7 +314,7 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
 
         return DoClientStreamActionAsync(async call =>
         {
-            await call.ClientStreamWriter!.CompleteAsync().ConfigureAwait(false);
+            await call.ClientStreamWriter!.CompleteAsync();
         });
     }
 
@@ -337,7 +337,7 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
             call.TryRegisterCancellation(cancellationToken, out var registration);
             try
             {
-                await call.WriteClientStreamAsync(WriteNewMessage, message, cancellationToken).ConfigureAwait(false);
+                await call.WriteClientStreamAsync(WriteNewMessage, message, cancellationToken);
             }
             finally
             {
@@ -351,9 +351,9 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
 
             if (ClientStreamComplete)
             {
-                await call.ClientStreamWriter.CompleteAsync().ConfigureAwait(false);
+                await call.ClientStreamWriter.CompleteAsync();
             }
-        }).ConfigureAwait(false);
+        });
     }
 
     private async Task DoClientStreamActionAsync(Func<IGrpcCall<TRequest, TResponse>, Task> action)
@@ -367,17 +367,17 @@ internal sealed class RetryCall<TRequest, TResponse> : RetryCallBase<TRequest, T
         // Keep going until either the action succeeds, or there is no new active call
         // because of exceeded attempts, non-retry status code or retry throttling.
 
-        var call = await GetActiveCallAsync(previousCall: null).ConfigureAwait(false);
+        var call = await GetActiveCallAsync(previousCall: null);
         while (true)
         {
             try
             {
-                await action(call!).ConfigureAwait(false);
+                await action(call!);
                 return;
             }
             catch
             {
-                call = await GetActiveCallAsync(previousCall: call).ConfigureAwait(false);
+                call = await GetActiveCallAsync(previousCall: call);
                 if (call == null)
                 {
                     throw;

@@ -95,7 +95,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
             HttpResponseMessage? httpResponse = null;
             try
             {
-                httpResponse = await call.HttpResponseTask.ConfigureAwait(false);
+                httpResponse = await call.HttpResponseTask;
                 responseStatus = GrpcCall.ValidateHeaders(httpResponse, out _);
             }
             catch (RpcException ex)
@@ -130,7 +130,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
                 // Wait until the call has finished and then check its status code
                 // to update retry throttling tokens.
                 // Force yield here to prevent continuation running with any locks.
-                var status = await CompatibilityHelpers.AwaitWithYieldAsync(call.CallTask).ConfigureAwait(false);
+                var status = await CompatibilityHelpers.AwaitWithYieldAsync(call.CallTask);
                 if (status.StatusCode == StatusCode.OK)
                 {
                     RetryAttemptCallSuccess();
@@ -211,7 +211,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
 
                 // Wait until the commited call is finished and then clean up hedging call.
                 // Force yield here to prevent continuation running with any locks.
-                var status = await CompatibilityHelpers.AwaitWithYieldAsync(call.CallTask).ConfigureAwait(false);
+                var status = await CompatibilityHelpers.AwaitWithYieldAsync(call.CallTask);
 
                 var observeExceptions = status.StatusCode is StatusCode.Cancelled or StatusCode.DeadlineExceeded;
                 Cleanup(observeExceptions);
@@ -284,7 +284,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
             {
                 _ = StartCall(startCallFunc);
 
-                await HedgingDelayAsync(hedgingDelay).ConfigureAwait(false);
+                await HedgingDelayAsync(hedgingDelay);
 
                 if (IsDeadlineExceeded())
                 {
@@ -336,7 +336,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
         {
             CompatibilityHelpers.Assert(_hedgingDelayCts != null);
 
-            var completedTask = await Task.WhenAny(Task.Delay(hedgingDelay, _hedgingDelayCts.Token), _delayInterruptTcs.Task).ConfigureAwait(false);
+            var completedTask = await Task.WhenAny(Task.Delay(hedgingDelay, _hedgingDelayCts.Token), _delayInterruptTcs.Task);
             if (completedTask != _delayInterruptTcs.Task)
             {
                 // Task.Delay won. Check CTS to see if it won because of cancellation.
@@ -449,7 +449,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
 
                 try
                 {
-                    await Task.WhenAll(writeTasks).ConfigureAwait(false);
+                    await Task.WhenAll(writeTasks);
                 }
                 finally
                 {
@@ -461,7 +461,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
                         }
                     }
                 }
-            }).ConfigureAwait(false);
+            });
         }
         catch
         {
@@ -474,7 +474,7 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
             }
 
             // Flag indicates whether buffered message was successfully written.
-            var success = await _writeClientMessageTcs.Task.ConfigureAwait(false);
+            var success = await _writeClientMessageTcs.Task;
             if (success)
             {
                 return;
@@ -518,8 +518,8 @@ internal sealed partial class HedgingCall<TRequest, TResponse> : RetryCallBase<T
 
         async Task WaitForCallUnsynchronizedAsync(Func<IList<IGrpcCall<TRequest, TResponse>>, Task> action)
         {
-            var call = await GetActiveCallUnsynchronizedAsync(previousCall: null).ConfigureAwait(false);
-            await action(new[] { call! }).ConfigureAwait(false);
+            var call = await GetActiveCallUnsynchronizedAsync(previousCall: null);
+            await action(new[] { call! });
         }
     }
 

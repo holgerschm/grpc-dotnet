@@ -114,8 +114,8 @@ internal abstract partial class RetryCallBase<TRequest, TResponse> : IGrpcCall<T
 
     private async Task<TResponse> GetResponseCoreAsync()
     {
-        var call = await CommitedCallTask.ConfigureAwait(false);
-        return await call.GetResponseAsync().ConfigureAwait(false);
+        var call = await CommitedCallTask;
+        return await call.GetResponseAsync();
     }
 
     public Task<Metadata> GetResponseHeadersAsync()
@@ -139,8 +139,8 @@ internal abstract partial class RetryCallBase<TRequest, TResponse> : IGrpcCall<T
 
     private async Task<Metadata> GetResponseHeadersCoreAsync()
     {
-        var call = await CommitedCallTask.ConfigureAwait(false);
-        return await call.GetResponseHeadersAsync().ConfigureAwait(false);
+        var call = await CommitedCallTask;
+        return await call.GetResponseHeadersAsync();
     }
 
     public Status GetStatus()
@@ -229,11 +229,11 @@ internal abstract partial class RetryCallBase<TRequest, TResponse> : IGrpcCall<T
                 }
             }
 
-            await writeTask.ConfigureAwait(false);
+            await writeTask;
 
             if (ClientStreamComplete)
             {
-                await call.ClientStreamWriter!.CompleteAsync().ConfigureAwait(false);
+                await call.ClientStreamWriter!.CompleteAsync();
             }
         });
     }
@@ -242,10 +242,10 @@ internal abstract partial class RetryCallBase<TRequest, TResponse> : IGrpcCall<T
     {
         for (var i = 0; i < bufferedMessages.Length; i++)
         {
-            await call.WriteMessageAsync(requestStream, bufferedMessages[i], call.CancellationToken).ConfigureAwait(false);
+            await call.WriteMessageAsync(requestStream, bufferedMessages[i], call.CancellationToken);
 
             // Flush stream to ensure messages are sent immediately.
-            await requestStream.FlushAsync(call.CancellationToken).ConfigureAwait(false);
+            await requestStream.FlushAsync(call.CancellationToken);
 
             OnBufferMessageWritten(i + 1);
         }
@@ -361,7 +361,7 @@ internal abstract partial class RetryCallBase<TRequest, TResponse> : IGrpcCall<T
             }
         }
 
-        await call.WriteMessageAsync(writeStream, messageData, callOptions.CancellationToken).ConfigureAwait(false);
+        await call.WriteMessageAsync(writeStream, messageData, callOptions.CancellationToken);
         MessagesWritten++;
     }
 
@@ -429,12 +429,12 @@ internal abstract partial class RetryCallBase<TRequest, TResponse> : IGrpcCall<T
     {
         CompatibilityHelpers.Assert(NewActiveCallTcs != null);
 
-        var call = await NewActiveCallTcs.Task.ConfigureAwait(false);
+        var call = await NewActiveCallTcs.Task;
 
         Debug.Assert(Monitor.IsEntered(Lock));
         if (call == null)
         {
-            call = await CommitedCallTask.ConfigureAwait(false);
+            call = await CommitedCallTask;
         }
 
         // Avoid infinite loop.

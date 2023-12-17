@@ -51,7 +51,7 @@ internal static class CompatibilityHelpers
         var tcs = new TaskCompletionSource<T>();
         using (cancellationToken.Register(static s => ((TaskCompletionSource<T>)s!).TrySetCanceled(), tcs))
         {
-            return await (await Task.WhenAny(task, tcs.Task).ConfigureAwait(false)).ConfigureAwait(false);
+            return await (await Task.WhenAny(task, tcs.Task));
         }
     }
 #endif
@@ -82,7 +82,7 @@ internal static class CompatibilityHelpers
 #if NET8_0_OR_GREATER
             return await callTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
 #else
-            var status = await callTask.ConfigureAwait(false);
+            var status = await callTask;
             await Task.Yield();
             return status;
 #endif

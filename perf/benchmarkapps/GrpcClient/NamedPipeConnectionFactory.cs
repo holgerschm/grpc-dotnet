@@ -46,7 +46,7 @@ public class NamedPipeConnectionFactory
 
         try
         {
-            await clientStream.ConnectAsync(cancellationToken).ConfigureAwait(false);
+            await clientStream.ConnectAsync(cancellationToken);
             return clientStream;
         }
         catch

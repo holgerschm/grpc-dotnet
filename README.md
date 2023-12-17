@@ -1,3 +1,13 @@
+# Version for Unity WebGL
+
+This is a special version for the use in Unity WebGL builds. Do not use it in any other Environment!
+
+# How to use
+
+* build this library as described below
+* 
+
+
 # gRPC for .NET
 
 gRPC is a modern, open source, high-performance remote procedure call (RPC) framework that can run anywhere. gRPC enables client and server applications to communicate transparently, and simplifies the building of connected systems.

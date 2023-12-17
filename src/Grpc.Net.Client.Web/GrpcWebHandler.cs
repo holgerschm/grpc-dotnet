@@ -163,7 +163,7 @@ public sealed class GrpcWebHandler : DelegatingHandler
         }
 #endif
 
-        var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        var response = await base.SendAsync(request, cancellationToken);
 
         if (response.Content != null && IsMatchingResponseContentType(GrpcWebMode, response.Content.Headers.ContentType?.MediaType))
         {

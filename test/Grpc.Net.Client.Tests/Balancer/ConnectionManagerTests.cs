@@ -161,7 +161,7 @@ public class ClientChannelTests
         clientChannel.ConfigureBalancer(c => new DropLoadBalancer(c));
 
         // Act
-        _ = clientChannel.ConnectAsync(waitForReady: true, CancellationToken.None).ConfigureAwait(false);
+        _ = clientChannel.ConnectAsync(waitForReady: true, CancellationToken.None);
 
         var pickTask = clientChannel.PickAsync(
             new PickContext { Request = new HttpRequestMessage() },
@@ -196,7 +196,7 @@ public class ClientChannelTests
         clientChannel.ConfigureBalancer(c => new PickFirstBalancer(c, loggerFactory));
 
         // Act
-        _ = clientChannel.ConnectAsync(waitForReady: false, CancellationToken.None).ConfigureAwait(false);
+        _ = clientChannel.ConnectAsync(waitForReady: false, CancellationToken.None);
 
         var pickTask = clientChannel.PickAsync(
             new PickContext { Request = new HttpRequestMessage() },
@@ -374,7 +374,7 @@ public class ClientChannelTests
         clientChannel.ConfigureBalancer(c => new PickFirstBalancer(c, loggerFactory));
 
         // Act
-        _ = clientChannel.ConnectAsync(waitForReady: true, CancellationToken.None).ConfigureAwait(false);
+        _ = clientChannel.ConnectAsync(waitForReady: true, CancellationToken.None);
 
         var connectAddress1 = await connectAddressesChannel.Reader.ReadAsync().AsTask().DefaultTimeout();
         Assert.AreEqual(80, connectAddress1.Port);

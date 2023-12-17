@@ -44,18 +44,18 @@ internal class PushStreamContent<TRequest, TResponse> : HttpContent
     {
         // Immediately flush request stream to send headers
         // https://github.com/dotnet/corefx/issues/39586#issuecomment-516210081
-        await stream.FlushAsync().ConfigureAwait(false);
+        await stream.FlushAsync();
 
         if (_startCallback != null)
         {
-            await _startCallback(stream).ConfigureAwait(false);
+            await _startCallback(stream);
         }
 
         // Pass request stream to writer
         _streamWriter.WriteStreamTcs.TrySetResult(stream);
 
         // Wait for the writer to report it is complete
-        await _streamWriter.CompleteTcs.Task.ConfigureAwait(false);
+        await _streamWriter.CompleteTcs.Task;
     }
 
     protected override bool TryComputeLength(out long length)

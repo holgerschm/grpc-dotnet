@@ -212,7 +212,7 @@ internal sealed class ConnectionManager : IDisposable, IChannelControlHelper
 
     public async Task ConnectAsync(bool waitForReady, CancellationToken cancellationToken)
     {
-        await EnsureResolverStartedAsync().ConfigureAwait(false);
+        await EnsureResolverStartedAsync();
 
         if (!waitForReady || State == ConnectivityState.Ready)
         {
@@ -233,7 +233,7 @@ internal sealed class ConnectionManager : IDisposable, IChannelControlHelper
                 _balancer?.RequestConnection();
             }
 
-            await waitForReadyTask.ConfigureAwait(false);
+            await waitForReadyTask;
         }
     }
 
@@ -303,7 +303,7 @@ internal sealed class ConnectionManager : IDisposable, IChannelControlHelper
         // deadline specified for a call being exceeded.
         while (true)
         {
-            var currentPicker = await GetPickerAsync(previousPicker, cancellationToken).ConfigureAwait(false);
+            var currentPicker = await GetPickerAsync(previousPicker, cancellationToken);
 
             ConnectionManagerLog.PickStarted(Logger);
             var result = currentPicker.Pick(context);
@@ -408,7 +408,7 @@ internal sealed class ConnectionManager : IDisposable, IChannelControlHelper
     {
         using (watcher.CancellationToken.Register(OnCancellation, watcher))
         {
-            await watcher.Tcs.Task.ConfigureAwait(false);
+            await watcher.Tcs.Task;
         }
     }
 

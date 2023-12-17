@@ -55,12 +55,12 @@ internal readonly struct ForceAsyncAwaiter : ICriticalNotifyCompletion
 
     public void OnCompleted(Action action)
     {
-        _task.ConfigureAwait(false).GetAwaiter().OnCompleted(action);
+        _task.GetAwaiter().OnCompleted(action);
     }
 
     public void UnsafeOnCompleted(Action action)
     {
-        _task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(action);
+        _task.GetAwaiter().UnsafeOnCompleted(action);
     }
 }
 
@@ -79,11 +79,11 @@ internal readonly struct ForceAsyncAwaiter<T> : ICriticalNotifyCompletion
 
     public void OnCompleted(Action action)
     {
-        _task.ConfigureAwait(false).GetAwaiter().OnCompleted(action);
+        _task.GetAwaiter().OnCompleted(action);
     }
 
     public void UnsafeOnCompleted(Action action)
     {
-        _task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(action);
+        _task.GetAwaiter().UnsafeOnCompleted(action);
     }
 }

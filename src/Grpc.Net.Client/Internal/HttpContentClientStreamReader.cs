@@ -126,7 +126,7 @@ internal class HttpContentClientStreamReader<TRequest, TResponse> : IAsyncStream
 
             if (_httpResponse == null)
             {
-                var (httpResponse, status) = await HttpResponseTcs.Task.ConfigureAwait(false);
+                var (httpResponse, status) = await HttpResponseTcs.Task;
                 if (status != null && status.Value.StatusCode != StatusCode.OK)
                 {
                     throw _call.CreateFailureStatusException(status.Value);
@@ -140,9 +140,9 @@ internal class HttpContentClientStreamReader<TRequest, TResponse> : IAsyncStream
                 try
                 {
 #if NET5_0_OR_GREATER
-                    _responseStream = await _httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+                    _responseStream = await _httpResponse.Content.ReadAsStreamAsync(cancellationToken);
 #else
-                    _responseStream = await _httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    _responseStream = await _httpResponse.Content.ReadAsStreamAsync();
 #endif
                 }
                 catch (ObjectDisposedException)
@@ -164,7 +164,7 @@ internal class HttpContentClientStreamReader<TRequest, TResponse> : IAsyncStream
                 _responseStream,
                 _grpcEncoding,
                 singleMessage: false,
-                _call.CancellationToken).ConfigureAwait(false);
+                _call.CancellationToken);
 
             if (readMessage == null)
             {
@@ -194,7 +194,7 @@ internal class HttpContentClientStreamReader<TRequest, TResponse> : IAsyncStream
             if (_call.ResponseFinished)
             {
                 // Call status will have been set before dispose.
-                var status = await _call.CallTask.ConfigureAwait(false);
+                var status = await _call.CallTask;
                 if (status.StatusCode == StatusCode.OK)
                 {
                     // Return false to indicate that the stream is complete without a message.

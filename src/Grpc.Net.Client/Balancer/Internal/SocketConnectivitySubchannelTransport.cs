@@ -167,7 +167,7 @@ internal class SocketConnectivitySubchannelTransport : ISubchannelTransport, IDi
             try
             {
                 SocketConnectivitySubchannelTransportLog.ConnectingSocket(_logger, _subchannel.Id, currentEndPoint);
-                await _socketConnect(socket, currentEndPoint, context.CancellationToken).ConfigureAwait(false);
+                await _socketConnect(socket, currentEndPoint, context.CancellationToken);
                 SocketConnectivitySubchannelTransportLog.ConnectedSocket(_logger, _subchannel.Id, currentEndPoint);
 
                 lock (Lock)
@@ -376,7 +376,7 @@ internal class SocketConnectivitySubchannelTransport : ISubchannelTransport, IDi
             SocketConnectivitySubchannelTransportLog.ConnectingOnCreateStream(_logger, _subchannel.Id, endPoint);
 
             socket = new Socket(SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-            await socket.ConnectAsync(endPoint, cancellationToken).ConfigureAwait(false);
+            await socket.ConnectAsync(endPoint, cancellationToken);
         }
 
         var networkStream = new NetworkStream(socket, ownsSocket: true);

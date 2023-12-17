@@ -94,7 +94,7 @@ internal class BalancerHttpHandler : DelegatingHandler
         }
 
         Debug.Assert(context.DnsEndPoint.Equals(currentAddress.EndPoint), "Context endpoint should equal address endpoint.");
-        return await subchannel.Transport.GetStreamAsync(currentAddress.EndPoint, cancellationToken).ConfigureAwait(false);
+        return await subchannel.Transport.GetStreamAsync(currentAddress.EndPoint, cancellationToken);
     }
 #endif
 
@@ -112,9 +112,9 @@ internal class BalancerHttpHandler : DelegatingHandler
             waitForReady = value;
         }
 
-        await _manager.ConnectAsync(waitForReady: false, cancellationToken).ConfigureAwait(false);
+        await _manager.ConnectAsync(waitForReady: false, cancellationToken);
         var pickContext = new PickContext { Request = request };
-        var result = await _manager.PickAsync(pickContext, waitForReady, cancellationToken).ConfigureAwait(false);
+        var result = await _manager.PickAsync(pickContext, waitForReady, cancellationToken);
         var address = result.Address;
         var addressEndpoint = address.EndPoint;
 
@@ -147,7 +147,7 @@ internal class BalancerHttpHandler : DelegatingHandler
 
         try
         {
-            var responseMessage = await responseMessageTask.ConfigureAwait(false);
+            var responseMessage = await responseMessageTask;
 
             // TODO(JamesNK): This doesn't take into account long running streams.
             // If there is response content then we need to wait until it is read to the end
